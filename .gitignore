@@ -1,0 +1,13 @@
+.codelite/*
+.clang/*
+workspace.tags
+
+*.mk
+Makefile
+
+client/Client.txt
+server/Server.txt
+
+bin/*
+
+depend/*
