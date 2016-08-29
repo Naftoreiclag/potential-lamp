@@ -19,10 +19,14 @@
 
 #include <string>
 #include <stdint.h>
+#include <thread>
+#include <mutex>
 
-#include "boost/asio/io_service.hpp"
+#include "boost/asio.hpp"
 
 #include "ThreadSafeQueue.hpp"
+#include "IpQuery.hpp"
+#include "Packet.hpp"
 
 namespace gtm {
 
@@ -31,6 +35,9 @@ public:
     class Status {
     public:
         enum State {
+            
+            //
+            UNINITIALIZED,
             
             // 
             CONNECTED, // Connection healthy and able to send packets
@@ -48,28 +55,39 @@ public:
             REQUESTING_CONNECTION // In handshake process, cannot yet
         };
         
-        Status(State state);
+        Status(State state, std::string msg = "");
+        
+        bool isConnectionAlive();
+        bool isConnectionPaused();
     private:
         State mState;
         
-        std::string
-        
-        bool isConnected();
+        std::string mMsg;
     };
-    
-    boost::asio::io_service mIoService;
     
     Client();
     ~Client();
     
     Status getStatus();
-
-    // Asynchronous, check getStatus()
-    void connect(UdpQuery query);
+    void connect(IpQuery query);
     void disconnect();
-    
-    void sendPacket(Packet packet);
+    void sendPacket(Packet& packet);
     bool receivePacket(Packet& packet); // returns true if packet available
+    
+    void startServiceThread();
+    void stopServiceThread();
+    
+    void send(std::string msg);
+private:
+    std::mutex mStatusMutex;
+    Status mStatus;
+    
+    std::thread* mServiceThread;
+    void serviceThreadRuntime();
+    
+    boost::asio::io_service mIoService;
+    boost::asio::ip::udp::socket* mSocket;
+    boost::asio::ip::udp::endpoint mServerEndpoint;
 };
 
 }

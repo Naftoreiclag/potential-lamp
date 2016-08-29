@@ -16,20 +16,66 @@
 
 #include "Client.hpp"
 
-namespace gtm
-{
+namespace gtm {
 
-Client::Client() {
+Client::Status::Status(Client::Status::State state, std::string msg)
+: mState(state)
+, mMsg(msg) {
+}
+    
+bool Client::Status::isConnectionAlive() {
+    return mState == CONNECTED || mState == STREAM_PAUSED;
+}
+
+bool Client::Status::isConnectionPaused() {
+    return mState == STREAM_PAUSED;
+}
+
+Client::Client()
+: mStatus(Status::State::UNINITIALIZED) {
 }
 
 Client::~Client() {
+    if(mSocket) {
+        if(mSocket->is_open()) mSocket->close();
+        delete mSocket;
+    }
+}
+
+Client::Status Client::getStatus() {
+    std::lock_guard<std::mutex> guard(mStatusMutex);
+    return mStatus;
 }
 
 void Client::connect(IpQuery serverQuery) {
     boost::asio::ip::udp::resolver resolver(mIoService);
-    boost::asio::ip::udp::resolver::query udpQuery(boost::asio::ip::udp::v4(), query.)
+    boost::asio::ip::udp::resolver::query query(boost::asio::ip::udp::v4(), "localhost:13808");
+    mServerEndpoint = *resolver.resolve(query);
+    
+    mSocket = new boost::asio::ip::udp::socket(mIoService);
+    mSocket->open(boost::asio::ip::udp::v4());
+    
+    // Debug
+    mStatus = Status(Status::State::CONNECTED);
+}
+void Client::serviceThreadRuntime() {
+    mIoService.run();
 }
 
+void Client::startServiceThread() {
+    mServiceThread = new std::thread(serviceThreadRuntime, this);
+}
+void Client::stopServiceThread() {
+    // ??
+}
+
+void Client::sendPacket(Packet& packet) {
+    
+}
+
+void Client::send(std::string msg) {
+    
+}
 
 }
 

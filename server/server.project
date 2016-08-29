@@ -1,6 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <CodeLite_Project Name="server" InternalType="Console">
   <Plugins>
+    <Plugin Name="qmake">
+      <![CDATA[00010001N0005Debug000000000000]]>
+    </Plugin>
     <Plugin Name="CMakePlugin">
       <![CDATA[[{
   "name": "Debug",
@@ -13,20 +16,21 @@
   "parentProject": ""
  }]]]>
     </Plugin>
-    <Plugin Name="qmake">
-      <![CDATA[00010001N0005Debug000000000000]]>
-    </Plugin>
   </Plugins>
   <Description/>
   <Dependencies/>
   <VirtualDirectory Name="src">
     <File Name="main.cpp"/>
-    <VirtualDirectory Name="common">
-      <File Name="../common/ThreadSafeQueue.hpp"/>
-      <File Name="../common/IpQuery.cpp"/>
-      <File Name="../common/IpQuery.hpp"/>
-      <File Name="../common/Packet.cpp"/>
-      <File Name="../common/Packet.hpp"/>
+    <VirtualDirectory Name="networking">
+      <VirtualDirectory Name="common">
+        <File Name="../common/IpQuery.cpp"/>
+        <File Name="../common/IpQuery.hpp"/>
+        <File Name="../common/Packet.cpp"/>
+        <File Name="../common/Packet.hpp"/>
+        <File Name="../common/ThreadSafeQueue.hpp"/>
+      </VirtualDirectory>
+      <File Name="Server.hpp"/>
+      <File Name="Server.cpp"/>
     </VirtualDirectory>
   </VirtualDirectory>
   <Settings Type="Executable">
@@ -40,11 +44,17 @@
       <ResourceCompiler Options=""/>
     </GlobalSettings>
     <Configuration Name="Debug" CompilerType="MinGW ( mingw64 )" DebuggerType="GNU gdb debugger" Type="Executable" BuildCmpWithGlobalSettings="append" BuildLnkWithGlobalSettings="append" BuildResWithGlobalSettings="append">
-      <Compiler Options="-g;-O0;-Wall" C_Options="-g;-O0;-Wall" Assembler="" Required="yes" PreCompiledHeader="" PCHInCommandLine="no" PCHFlags="" PCHFlagsPolicy="0">
+      <Compiler Options="-g;-O0;-std=c++11;-Wall" C_Options="-g;-O0;-Wall" Assembler="" Required="yes" PreCompiledHeader="" PCHInCommandLine="no" PCHFlags="" PCHFlagsPolicy="0">
         <IncludePath Value="."/>
+        <IncludePath Value="../common/"/>
         <IncludePath Value="$(BOOST_HOME)"/>
       </Compiler>
-      <Linker Options="" Required="yes"/>
+      <Linker Options="" Required="yes">
+        <LibraryPath Value="$(BOOST_HOME)/lib/"/>
+        <Library Value="boost_thread-mgw51-mt-s-1_59"/>
+        <Library Value="boost_system-mgw51-s-1_59"/>
+        <Library Value="ws2_32"/>
+      </Linker>
       <ResourceCompiler Options="" Required="no"/>
       <General OutputFile="$(IntermediateDirectory)/$(ProjectName)" IntermediateDirectory="../bin/server/Debug" Command="./$(ProjectName)" CommandArguments="" UseSeparateDebugArgs="no" DebugArguments="" WorkingDirectory="$(IntermediateDirectory)" PauseExecWhenProcTerminates="yes" IsGUIProgram="no" IsEnabled="yes"/>
       <Environment EnvVarSetName="&lt;Use Defaults&gt;" DbgSetName="&lt;Use Defaults&gt;">

@@ -14,17 +14,27 @@
    limitations under the License.
 */
 
-#include "IpQuery.hpp"
+#include <iostream>
+#include <chrono>
 
-namespace gtm {
+#include "boost/asio/io_service.hpp"
 
-IpQuery::IpQuery(std::string aAddress, uint16_t aPort)
-: address(aAddress)
-, port(aPort) {
+#include "Server.hpp"
+
+using namespace gtm;
+
+int main(int argc, char** argv) {
+    
+    std::cout << "Something server!" << std::endl;
+    
+    Server server;
+    
+    server.initialize(13808);
+    server.startServiceThread();
+    
+    while(true) {
+        std::this_thread::sleep_for(std::chrono::seconds(1));
+    }
+    
+    return 0;
 }
-
-IpQuery::~IpQuery() {
-}
-
-}
-

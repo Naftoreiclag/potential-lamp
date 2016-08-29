@@ -15,22 +15,32 @@
 */
 
 #include <iostream>
+#include <chrono>
+
+#include "Client.hpp"
 
 // Randomly generated 3-character sequence
 using namespace gtm;
 
 int main(int argc, char** argv) {
     
-    Client client();
+    std::cout << "Something client!" << std::endl;
     
-    client.connect("localhost", 13808);
+    Client client;
     
+    client.connect(IpQuery("localhost", 13808));
+    
+    std::cout << "Connecting... " << std::endl;
     while(true) {
         Client::Status status = client.getStatus();
-        
+        if(status.isConnectionAlive()) {
+            break;
+        }
+        std::this_thread::sleep_for(std::chrono::seconds(1));
     }
     
-    std::cout << "Test" << std::endl;
+    std::cout << "Connected to server" << std::endl;
+    client.send("Hello world!");
     
     return 0;
 }
